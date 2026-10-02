@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: #eaf4e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 20px;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        /* CALCULATOR — iOS Style */
+        .calculator {
+            background-color: #e6efdb;
+            border-radius: 40px;
+            padding: 35px 25px;
+            box-shadow: 
+                20px 20px 60px #c8d4b8,
+                -20px -20px 60px #f0ffea;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .display {
+            padding: 20px 10px 30px;
+            text-align: right;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            word-break: break-all;
+        }
+
+        .expression {
+            color: #6a8f5c;
+            font-size: 22px;
+            min-height: 28px;
+            margin-bottom: 8px;
+        }
+
+        .result {
+            color: #2d4a24;
+            font-size: 36px;
+            font-weight: 600;
+        }
+
+        /* Buttons Grid */
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 50%;
+            height: 65px;
+            font-size: 22px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .btn:active {
+            transform: scale(0.92);
+        }
+
+        .btn-ac {
+            background-color: #cfe0c0;
+            color: #3a5f30;
+        }
+
+        .btn-ac:hover {
+            background-color: #bdd4aa;
+        }
+
+        .btn-op {
+            background-color: #ffb74d;
+            color: #fff;
+        }
+
+        .btn-op:hover {
+            background-color: #ffa726;
+        }
+
+        .btn-num {
+            background-color: #ffffff;
+            color: #2d4a24;
+        }
+
+        .btn-num:hover {
+            background-color: #f0f7e8;
+        }
+
+        .btn-zero {
+            grid-column: span 2;
+            border-radius: 35px;
+        }
+
+        /* HISTORY PANEL */
+        .history-panel {
+            background-color: #e6efdb;
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 
+                12px 12px 30px #c8d4b8,
+                -12px -12px 30px #f0ffea;
+            width: 100%;
+            max-width: 340px;
+            max-height: 520px;
+            overflow-y: auto;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #c8d4b8;
+        }
+
+        .history-title {
+            color: #2d4a24;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .clear-btn {
+            background: none;
+            border: none;
+            color: #74a864;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .clear-btn:hover {
+            text-decoration: underline;
+        }
+
+        .history-item {
+            background-color: #d9e8c8;
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-text {
+            color: #2d4a24;
+            font-size: 16px;
+        }
+
+        .history-arrow {
+            color: #74a864;
+            font-size: 18px;
+        }
+
+        .history-empty {
+            color: #8fb880;
+            text-align: center;
+            padding: 40px 10px;
+            font-style: italic;
+        }
+
+        /* Scrollbar */
+        .history-panel::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .history-panel::-webkit-scrollbar-thumb {
+            background-color: #b8d4a8;
+            border-radius: 3px;
+        }
+
+        /* Hidden form values */
+        .hidden-inputs {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CALCULATOR -->
+    <div class="calculator">
+        <div class="display">
+            <div class="expression" id="expression"></div>
+            <div class="result" id="result">0</div>
+        </div>
+
+        <div class="buttons">
+            <button class="btn btn-ac" data-action="clear">AC</button>
+            <button class="btn btn-ac" data-action="sign">±</button>
+            <button class="btn btn-ac" data-action="percent">%</button>
+            <button class="btn btn-op" data-op="divide">÷</button>
+
+            <button class="btn btn-num" data-num="7">7</button>
+            <button class="btn btn-num" data-num="8">8</button>
+            <button class="btn btn-num" data-num="9">9</button>
+            <button class="btn btn-op" data-op="multiply">×</button>
+
+            <button class="btn btn-num" data-num="4">4</button>
+            <button class="btn btn-num" data-num="5">5</button>
+            <button class="btn btn-num" data-num="6">6</button>
+            <button class="btn btn-op" data-op="subtract">−</button>
+
+            <button class="btn btn-num" data-num="1">1</button>
+            <button class="btn btn-num" data-num="2">2</button>
+            <button class="btn btn-num" data-num="3">3</button>
+            <button class="btn btn-op" data-op="add">+</button>
+
+            <button class="btn btn-num btn-zero" data-num="0">0</button>
+            <button class="btn btn-num" data-decimal>.</button>
+            <button class="btn btn-op" data-equals>=</button>
+        </div>
+    </div>
+
+    <!-- HISTORY PANEL -->
+    <div class="history-panel">
+        <div class="history-header">
+            <span class="history-title">Calculations</span>
+            <button class="clear-btn" id="clearHistory">Clear</button>
+        </div>
+        <div id="historyList">
+            <div class="history-empty">No calculations yet</div>
+        </div>
+    </div>
+
+    <script>
+        let currentNum = '0';
+        let previousNum = '';
+        let selectedOp = null;
+        let shouldResetScreen = false;
+        let history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+
+        const expressionEl = document.getElementById('expression');
+        const resultEl = document.getElementById('result');
+        const historyList = document.getElementById('historyList');
+        const clearHistoryBtn = document.getElementById('clearHistory');
+
+        const opMap = {
+            'add': '+', 'subtract': '−', 'multiply': '×', 'divide': '÷'
+        };
+        const apiOpMap = {
+            'add': 'add', 'subtract': 'subtract', 'multiply': 'multiply', 'divide': 'divide'
+        };
+
+        renderHistory();
+        updateDisplay();
+
+        // Number buttons
+        document.querySelectorAll('[data-num]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (shouldResetScreen) resetScreen();
+                if (currentNum === '0') {
+                    currentNum = btn.dataset.num;
+                } else {
+                    currentNum += btn.dataset.num;
+                }
+                updateDisplay();
+            });
+        });
+
+        // Decimal
+        document.querySelector('[data-decimal]').addEventListener('click', () => {
+            if (shouldResetScreen) resetScreen();
+            if (!currentNum.includes('.')) currentNum += '.';
+            updateDisplay();
+        });
+
+        // Clear
+        document.querySelector('[data-action="clear"]').addEventListener('click', () => {
+            currentNum = '0';
+            previousNum = '';
+            selectedOp = null;
+            shouldResetScreen = false;
+            updateDisplay();
+        });
+
+        // Sign toggle
+        document.querySelector('[data-action="sign"]').addEventListener('click', () => {
+            currentNum = String(-parseFloat(currentNum));
+            updateDisplay();
+        });
+
+        // Percent
+        document.querySelector('[data-action="percent"]').addEventListener('click', () => {
+            currentNum = String(parseFloat(currentNum) / 100);
+            updateDisplay();
+        });
+
+        // Operation buttons
+        document.querySelectorAll('[data-op]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (selectedOp && !shouldResetScreen) calculateResult();
+                previousNum = currentNum;
+                selectedOp = btn.dataset.op;
+                shouldResetScreen = true;
+                updateDisplay();
+            });
+        });
+
+        // Equals — call API
+        document.querySelector('[data-equals]').addEventListener('click', async () => {
+            if (!selectedOp || shouldResetScreen) return;
+            await calculateResult();
+        });
+
+        async function calculateResult() {
+            const num1 = parseFloat(previousNum);
+            const num2 = parseFloat(currentNum);
+            const op = apiOpMap[selectedOp];
+
+            try {
+                const res = await fetch('/api/calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ num1, num2, operation: op })
+                });
+                const data = await res.json();
+                const result = data.python_result.result;
+
+                // Add to history
+                addToHistory(`${num1} ${opMap[selectedOp]} ${num2}`, result);
+
+                // Update state
+                currentNum = String(result);
+                selectedOp = null;
+                shouldResetScreen = true;
+                updateDisplay();
+            } catch (err) {
+                resultEl.textContent = 'Error';
+            }
+        }
+
+        function resetScreen() {
+            currentNum = '';
+            shouldResetScreen = false;
+        }
+
+        function updateDisplay() {
+            if (selectedOp && previousNum) {
+                expressionEl.textContent = `${previousNum} ${opMap[selectedOp]}`;
+            } else {
+                expressionEl.textContent = '';
+            }
+            resultEl.textContent = currentNum;
+        }
+
+        function addToHistory(expression, result) {
+            history.unshift({ expression, result });
+            if (history.length > 20) history.pop();
+            localStorage.setItem('calcHistory', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            if (history.length === 0) {
+                historyList.innerHTML = '<div class="history-empty">No calculations yet</div>';
+                return;
+            }
+            historyList.innerHTML = history.map(item => `
+                <div class="history-item">
+                    <span class="history-text">${item.expression} = ${item.result}</span>
+                    <span class="history-arrow">›</span>
+                </div>
+            `).join('');
+        }
+
+        clearHistoryBtn.addEventListener('click', () => {
+            if (confirm('Clear history?')) {
+                history = [];
+                localStorage.setItem('calcHistory', JSON.stringify(history));
+                renderHistory();
+            }
+        });
+    </script>
+</body>
+</html>
